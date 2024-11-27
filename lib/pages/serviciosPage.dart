@@ -6,8 +6,38 @@ import 'package:h_honey/pages/menu_page.dart';
 import 'package:h_honey/pages/pagosPage.dart';
 import 'package:h_honey/pages/sedesPage.dart';
 
-class ServiciosPage extends StatelessWidget {
+class ServiciosPage extends StatefulWidget {
   const ServiciosPage({super.key});
+
+  @override
+  _ServiciosPageState createState() => _ServiciosPageState();
+}
+
+class _ServiciosPageState extends State<ServiciosPage> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Servicio> filteredServicios = servicios;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_filterServicios);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterServicios() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredServicios = servicios.where((servicio) {
+        return servicio.nombre.toLowerCase().contains(query) ||
+            servicio.descripcion.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,108 +45,132 @@ class ServiciosPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Servicios'),
       ),
-      drawer: Drawer(
-        child: ListView(
+      drawer: _buildDrawer(context),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
           children: [
-            DrawerHeader(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 80,
+            // Buscador
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Buscar Servicio',
+                  labelStyle: const TextStyle(color: Color(0xff3E2723)),
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.amber,
+                      width: 2,
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'H-Honey',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.amber,
+                      width: 2,
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Menú Principal'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MenuPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Clientes'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ClientesPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.miscellaneous_services),
-              title: const Text('Servicios'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ServiciosPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text('Categoría de Ejemplares'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EjemplaresPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.payment),
-              title: const Text('Pagos'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PagosPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.house),
-              title: const Text('Sedes'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SedesPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.monitor_heart),
-              title: const Text('Control y Seguimiento'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ControlSeguimientoPage()),
-                );
-              },
+            // Lista de servicios
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredServicios.length,
+                itemBuilder: (context, index) {
+                  return _buildServicioCard(context, filteredServicios[index]);
+                },
+              ),
             ),
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: servicios.length,
-          itemBuilder: (context, index) {
-            return _buildServicioCard(context, servicios[index]);
-          },
-        ),
+    );
+  }
+
+  // Construir el menú lateral (drawer)
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: [
+          DrawerHeader(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 80,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'H-Honey',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Menú Principal',
+            icon: Icons.home,
+            page: const MenuPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Clientes',
+            icon: Icons.person,
+            page: const ClientesPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Servicios',
+            icon: Icons.miscellaneous_services,
+            page: const ServiciosPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Categoría de Ejemplares',
+            icon: Icons.category,
+            page: const EjemplaresPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Pagos',
+            icon: Icons.payment,
+            page: const PagosPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Sedes',
+            icon: Icons.house,
+            page: const SedesPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            title: 'Control y Seguimiento',
+            icon: Icons.monitor_heart,
+            page: const ControlSeguimientoPage(),
+          ),
+        ],
       ),
+    );
+  }
+
+  // Construir un ítem del menú lateral
+  Widget _buildDrawerItem(BuildContext context,
+      {required String title, required IconData icon, required Widget page}) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
+      },
     );
   }
 
@@ -134,7 +188,7 @@ class ServiciosPage extends StatelessWidget {
             borderRadius: const BorderRadius.horizontal(left: Radius.circular(15)),
             child: Container(
               width: 120, // Imagen más grande
-              height: 120,
+              height: 130,
               color: Colors.grey[200],
               child: Image.asset(
                 servicio.imagen,
@@ -151,7 +205,7 @@ class ServiciosPage extends StatelessWidget {
                 children: [
                   // Nombre del servicio
                   Text(
-                    servicio.nombre,
+                    servicio.nombre.toUpperCase(),
                     style: const TextStyle(
                       fontSize: 18, // Fuente más grande
                       fontWeight: FontWeight.bold,
@@ -179,10 +233,6 @@ class ServiciosPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        servicio.estado ? "Activo" : "Inactivo",
-                        style: const TextStyle(fontSize: 13),
-                      )
                     ],
                   ),
                 ],
@@ -210,7 +260,7 @@ class Servicio {
   });
 }
 
-// Lista de servicios de ejemplo
+// Lista de servicios de ejemplo (datos quemados)
 final List<Servicio> servicios = [
   Servicio(
     nombre: 'Alimentación',

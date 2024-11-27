@@ -13,6 +13,7 @@ class MenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false
         // title: const Text('Menú Principal'),
       ),
       // drawer: Drawer(
@@ -119,7 +120,7 @@ class MenuPage extends StatelessWidget {
           // Íconos grandes de módulos
           _buildIconItem(context, Icons.person, 'Clientes', const ClientesPage()),
           _buildIconItem(context, Icons.business_center, 'Servicios', const ServiciosPage()),
-          _buildIconItem(context, Icons.category, 'Ejemplares', const EjemplaresPage()),
+          _buildIconItem(context, Icons.category, 'Categorias', const EjemplaresPage()),
           _buildIconItem(context, Icons.payment, 'Pagos', const PagosPage()),
           _buildIconItem(context, Icons.house, 'Sedes', const SedesPage()),
           _buildIconItem(context, Icons.monitor_heart, 'Control', const ControlSeguimientoPage()),
