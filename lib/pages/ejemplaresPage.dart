@@ -173,8 +173,8 @@ class _EjemplaresPageState extends State<EjemplaresPage> {
 
   Widget _buildCategoriaCard(BuildContext context, Categoria categoria) {
     return Card(
-      elevation: 8,
-      margin: const EdgeInsets.symmetric(vertical: 14.5),
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         onTap: () {
