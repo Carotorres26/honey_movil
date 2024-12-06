@@ -4,7 +4,7 @@ import 'package:h_honey/pages/controlSegumientoPage.dart';
 import 'package:h_honey/pages/ejemplaresPage.dart';
 import 'package:h_honey/pages/menu_page.dart';
 import 'package:h_honey/pages/pagosPage.dart';
-import 'package:h_honey/pages/sedesPage.dart';
+
 
 class ServiciosPage extends StatefulWidget {
   const ServiciosPage({super.key});
@@ -141,12 +141,6 @@ class _ServiciosPageState extends State<ServiciosPage> {
             title: 'Pagos',
             icon: Icons.payment,
             page: const PagosPage(),
-          ),
-          _buildDrawerItem(
-            context,
-            title: 'Sedes',
-            icon: Icons.house,
-            page: const SedesPage(),
           ),
           _buildDrawerItem(
             context,

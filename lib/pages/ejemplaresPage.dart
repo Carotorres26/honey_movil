@@ -3,7 +3,6 @@ import 'package:h_honey/pages/controlSegumientoPage.dart';
 import 'package:h_honey/pages/serviciosPage.dart';
 import 'package:h_honey/pages/menu_page.dart';
 import 'package:h_honey/pages/pagosPage.dart';
-import 'package:h_honey/pages/sedesPage.dart';
 import 'package:h_honey/pages/clientesPage.dart';
 import 'package:h_honey/pages/EjemplaresListPage.dart'; // Importa la página de lista de ejemplares
 
@@ -17,6 +16,8 @@ class EjemplaresPage extends StatefulWidget {
 class _EjemplaresPageState extends State<EjemplaresPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Categoria> filteredCategorias = categorias;
+  int currentPage = 1;
+  final int itemsPerPage = 6; // Cambia esto según el número de elementos por página
 
   @override
   void initState() {
@@ -36,7 +37,18 @@ class _EjemplaresPageState extends State<EjemplaresPage> {
       filteredCategorias = categorias.where((categoria) {
         return categoria.nombre.toLowerCase().contains(query);
       }).toList();
+      currentPage = 1; // Reiniciar a la primera página al filtrar
     });
+  }
+
+  // Método para obtener los elementos que se mostrarán en la página actual
+  List<Categoria> get paginatedCategorias {
+    int startIndex = (currentPage - 1) * itemsPerPage;
+    int endIndex = startIndex + itemsPerPage;
+    return filteredCategorias.sublist(
+      startIndex,
+      endIndex < filteredCategorias.length ? endIndex : filteredCategorias.length,
+    );
   }
 
   @override
@@ -77,11 +89,44 @@ class _EjemplaresPageState extends State<EjemplaresPage> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: filteredCategorias.length,
+                itemCount: paginatedCategorias.length,
                 itemBuilder: (context, index) {
-                  final categoria = filteredCategorias[index];
+                  final categoria = paginatedCategorias[index];
                   return _buildCategoriaCard(context, categoria);
                 },
+              ),
+            ),
+            // Paginación
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: currentPage > 1
+                        ? () {
+                            setState(() {
+                              currentPage--;
+                            });
+                          }
+                        : null,
+                  ),
+                  Text(
+                    'Página $currentPage de ${((filteredCategorias.length / itemsPerPage).ceil())}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: currentPage < (filteredCategorias.length / itemsPerPage).ceil()
+                        ? () {
+                            setState(() {
+                              currentPage++;
+                            });
+                          }
+                        : null,
+                  ),
+                ],
               ),
             ),
           ],
@@ -139,12 +184,6 @@ class _EjemplaresPageState extends State<EjemplaresPage> {
             title: 'Pagos',
             icon: Icons.payment,
             page: const PagosPage(),
-          ),
-          _buildDrawerItem(
-            context,
-            title: 'Sedes',
-            icon: Icons.house,
-            page: const SedesPage(),
           ),
           _buildDrawerItem(
             context,
@@ -224,5 +263,5 @@ class Categoria {
 final List<Categoria> categorias = [
   Categoria('Competencia'),
   Categoria('Receptoras'),
-  Categoria('Potros'),
+  Categoria('Potros')
 ];
