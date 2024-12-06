@@ -3,7 +3,6 @@ import 'package:h_honey/pages/controlSegumientoPage.dart';
 import 'package:h_honey/pages/ejemplaresPage.dart';
 import 'package:h_honey/pages/menu_page.dart';
 import 'package:h_honey/pages/pagosPage.dart';
-import 'package:h_honey/pages/sedesPage.dart';
 import 'package:h_honey/pages/serviciosPage.dart';
 
 class ClientesPage extends StatelessWidget {
@@ -82,16 +81,6 @@ class ClientesPage extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const PagosPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.house),
-              title: const Text('Sedes'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SedesPage()),
                 );
               },
             ),

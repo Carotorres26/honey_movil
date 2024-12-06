@@ -3,7 +3,6 @@ import 'package:h_honey/pages/clientesPage.dart';
 import 'package:h_honey/pages/controlSegumientoPage.dart';
 import 'package:h_honey/pages/ejemplaresPage.dart';
 import 'package:h_honey/pages/pagosPage.dart';
-import 'package:h_honey/pages/sedesPage.dart';
 import 'package:h_honey/pages/serviciosPage.dart';
 
 class MenuPage extends StatelessWidget {
@@ -88,16 +87,6 @@ class MenuPage extends StatelessWidget {
       //         },
       //       ),
       //       ListTile(
-      //         leading: const Icon(Icons.house),
-      //         title: const Text('Sedes'),
-      //         onTap: () {
-      //           Navigator.pushReplacement(
-      //             context,
-      //             MaterialPageRoute(builder: (context) => const SedesPage()),
-      //           );
-      //         },
-      //       ),
-      //       ListTile(
       //         leading: const Icon(Icons.monitor_heart),
       //         title: const Text('Control y Seguimiento'),
       //         onTap: () {
@@ -122,7 +111,6 @@ class MenuPage extends StatelessWidget {
           _buildIconItem(context, Icons.business_center, 'Servicios', const ServiciosPage()),
           _buildIconItem(context, Icons.category, 'Categorias', const EjemplaresPage()),
           _buildIconItem(context, Icons.payment, 'Pagos', const PagosPage()),
-          _buildIconItem(context, Icons.house, 'Sedes', const SedesPage()),
           _buildIconItem(context, Icons.monitor_heart, 'Control', const ControlSeguimientoPage()),
         ],
       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:h_honey/pages/menu_page.dart';
 import 'package:h_honey/pages/clientesPage.dart';
 import 'package:h_honey/pages/serviciosPage.dart';
-import 'package:h_honey/pages/sedesPage.dart';
 import 'package:h_honey/pages/controlSegumientoPage.dart';
 import 'package:h_honey/pages/pagosPage.dart';
 
@@ -17,6 +16,8 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
   final TextEditingController _searchController = TextEditingController();
   
   List<Ejemplar> filteredEjemplares = [];
+  int currentPage = 0;
+  final int itemsPerPage = 2; // Número de ejemplares por página
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
         return ejemplar.nombre.toLowerCase().contains(query) ||
                ejemplar.dueno.toLowerCase().contains(query);
       }).toList();
+      currentPage = 0; // Restablecer a la primera página al hacer búsqueda
     });
   }
 
@@ -43,6 +45,9 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Calcular la cantidad de páginas
+    final pageCount = (filteredEjemplares.length / itemsPerPage).ceil();
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ejemplares'),
@@ -99,12 +104,6 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
               title: 'Pagos',
               icon: Icons.payment,
               page: const PagosPage(),
-            ),
-            _buildDrawerItem(
-              context,
-              title: 'Sedes',
-              icon: Icons.house,
-              page: const SedesPage(),
             ),
             _buildDrawerItem(
               context,
@@ -165,11 +164,45 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: filteredEjemplares.length,
+                itemCount: itemsPerPage,
                 itemBuilder: (context, index) {
-                  final ejemplar = filteredEjemplares[index];
-                  return _buildEjemplarCard(ejemplar);
+                  final itemIndex = index + (currentPage * itemsPerPage);
+                  if (itemIndex < filteredEjemplares.length) {
+                    final ejemplar = filteredEjemplares[itemIndex];
+                    return _buildEjemplarCard(ejemplar);
+                  } else {
+                    return const SizedBox.shrink();
+                  }
                 },
+              ),
+            ),
+            SizedBox(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: currentPage > 0
+                        ? () {
+                            setState(() {
+                              currentPage--;
+                            });
+                          }
+                        : null,
+                  ),
+                  Text('Página ${currentPage + 1} de $pageCount'),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: currentPage < pageCount - 1
+                        ? () {
+                            setState(() {
+                              currentPage++;
+                            });
+                          }
+                        : null,
+                  ),
+                ],
               ),
             ),
           ],
@@ -247,7 +280,6 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
 
   List<Ejemplar> _getEjemplares() {
     return [
-      // Categoría: Competencia
       Ejemplar(
         nombre: 'Atractivo',
         fechaNacimiento: '05/01/2018',
@@ -268,57 +300,30 @@ class _EjemplaresListPageState extends State<EjemplaresListPage> {
         cedula: '506070809',
         correo: 'maria.rodriguez@gmail.com',
       ),
-      // Categoría: Receptoras
-      // Ejemplar(
-      //   nombre: 'Mora',
-      //   fechaNacimiento: '07/06/2019',
-      //   edadEnMeses: 60,
-      //   paso: 'Receptora',
-      //   color: 'Alazán',
-      //   dueno: 'Carlos López',
-      //   cedula: '123456789',
-      //   correo: 'carlos.lopez@gmail.com',
-      // ),
-      // Ejemplar(
-      //   nombre: 'Castaña',
-      //   fechaNacimiento: '20/02/2020',
-      //   edadEnMeses: 48,
-      //   paso: 'Receptora',
-      //   color: 'Castaño',
-      //   dueno: 'Ana Pérez',
-      //   cedula: '987654321',
-      //   correo: 'ana.perez@gmail.com',
-      // ),
-      // Categoría: Potros
-      // Ejemplar(
-      //   nombre: 'Oro Rosa',
-      //   fechaNacimiento: '01/01/2021',
-      //   edadEnMeses: 36,
-      //   paso: 'Galope',
-      //   color: 'Dorado',
-      //   dueno: 'Luis García',
-      //   cedula: '456789123',
-      //   correo: 'luis.garcia@gmail.com',
-      // ),
-      // Ejemplar(
-      //   nombre: 'Impetuoso',
-      //   fechaNacimiento: '15/05/2022',
-      //   edadEnMeses: 24,
-      //   paso: 'Paso Fino',
-      //   color: 'Negro',
-      //   dueno: 'Javier Sánchez',
-      //   cedula: '654321987',
-      //   correo: 'javier.sanchez@gmail.com',
-      // ),
+      Ejemplar(
+        nombre: 'Héroe',
+        fechaNacimiento: '15/06/2019',
+        edadEnMeses: 60,
+        paso: 'Paso Fino',
+        color: 'Blanco',
+        dueno: 'Carlos Sánchez',
+        cedula: '120304050',
+        correo: 'carlos.sanchez@gmail.com',
+      ),
+      // Agregar más ejemplares aquí...
     ];
   }
 
-  Widget _buildDrawerItem(BuildContext context, {required String title, required IconData icon, required Widget page}) {
+  Widget _buildDrawerItem(BuildContext context,
+      {required String title, required IconData icon, required Widget page}) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
+      leading: Icon(icon, color: Colors.amber),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 18, color: Colors.black),
+      ),
       onTap: () {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => page),
         );
